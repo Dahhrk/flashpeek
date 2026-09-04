@@ -55,8 +55,8 @@ interface FaceitProfileResponse {
 // ---------------------------------------------------------------------------
 
 function getApiKey(): string | null {
-  return process.env["FACEIT_API_KEY"]
-    ?? process.env["FLASHPEEK_FACEIT_API_KEY"]
+  return process.env["FLASHPEEK_FACEIT_API_KEY"]
+    ?? process.env["FACEIT_API_KEY"]
     ?? null;
 }
 
@@ -114,7 +114,7 @@ faceitRouter.get("/:steamId", async (req, res) => {
   const apiKey = getApiKey();
   if (!apiKey) {
     res.status(503).json({
-      error: "FACEIT API key not configured. Set FACEIT_API_KEY or FLASHPEEK_FACEIT_API_KEY.",
+      error: "FACEIT API key not configured. Set FLASHPEEK_FACEIT_API_KEY (or FACEIT_API_KEY).",
     });
     return;
   }
