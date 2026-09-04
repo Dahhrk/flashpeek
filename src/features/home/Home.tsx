@@ -1,19 +1,22 @@
 import type { FormEvent } from "react";
 import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "./Home.css";
 
 export function Home() {
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault();
-      if (query.trim()) {
-        // Profile lookup will be wired in a future iteration.
+      const trimmed = query.trim();
+      if (trimmed) {
+        navigate(`/player/${encodeURIComponent(trimmed)}`);
       }
     },
-    [query],
+    [query, navigate],
   );
 
   return (

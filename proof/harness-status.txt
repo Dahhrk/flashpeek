@@ -1,42 +1,31 @@
-verify-flashpeek control harness run
-Branch: cursor/scaffold-flashpeek-51a3
-HEAD: 997a783257cd36b4306376f456c5d27cd28d0832
-Timestamp: 2026-09-04T04:42Z
+=== control-flashpeek harness status ===
+Date: 2026-09-04T05:10:36Z
 
---- doctor ---
-Checking prerequisites…
-  node: OK
-  playwright: OK
-Doctor OK
-exit: 0
+doctor: OK
+launch: OK (PID captured)
+wait-settle: OK (page responded on :5174)
+session-start: OK (Playwright chromium headless)
+drive to profile: OK
+  text [data-testid=home-search] s1mple: OK
+  click button[type=submit]: OK
+  wait-for [data-testid=profile-root]: OK
+  navigation: / → /player/s1mple verified
+screenshot proof/profile.png: OK
+snapshot (ARIA): OK — profile-root with identity + faceit + premier + recent + form
 
---- launch ---
-Launching Vite dev server on port 5174…
-Dev server PID: 5507
-exit: 0
+empty-state proof:
+  goto /player/___unavailable_proof___: OK
+  screenshot proof/profile-unavailable.png: OK
+  ARIA: all sections show Unavailable
 
---- wait-settle ---
-Page is up.
-exit: 0
+testids verified: profile-root, profile-identity, profile-faceit, profile-premier, profile-recent, profile-form
 
---- screenshot ---
-Session started.
-Screenshot saved: /workspace/proof/home.png
-exit: 0
+gates:
+  typecheck: PASS
+  lint: PASS (0 warnings, 0 errors)
+  boundaries: PASS
+  anti-ai-ui: PASS
+  build: PASS
 
---- snapshot (ARIA) ---
-ariaSnapshot: "- main:\n  - heading \"Flashpeek\" [level=1]\n  - textbox \"FACEIT or Steam username\"\n  - button \"Peek\""
-testidElements:
-  home-root  tag=main  role=main   text="FlashpeekPeek"
-  home-brand tag=h1    role=h1     text="Flashpeek"
-  home-search tag=input role=input text=""
-exit: 0
-
---- cleanup ---
-Dev server killed.
-exit: 0
-
-Artifacts:
-  proof/home.png       — screenshot (11245 bytes)
-  proof/home-aria.json — ARIA snapshot + testid structure
-  proof/gates.txt      — raw gate command output
+BLOCKED: FLASHPEEK_FACEIT_KEY and FLASHPEEK_STEAM_KEY not set — API returns null fields.
+No data was invented.

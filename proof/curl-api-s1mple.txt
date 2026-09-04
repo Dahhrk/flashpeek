@@ -1,0 +1,29 @@
+=== curl transcript: GET /api/player/s1mple ===
+Date: 2026-09-04T05:10:25Z
+Server: http://localhost:5174 (Vite dev)
+FLASHPEEK_FACEIT_KEY: (not set)
+FLASHPEEK_STEAM_KEY: (not set)
+
+$ curl -s http://localhost:5174/api/player/s1mple | python3 -m json.tool
+{
+    "username": "s1mple",
+    "identity": {
+        "username": "s1mple",
+        "steamId": null,
+        "faceitId": null,
+        "avatar": null
+    },
+    "faceit": null,
+    "premier": null,
+    "recent": null,
+    "form": null,
+    "links": {
+        "rip": null,
+        "csrep": null,
+        "leetify": null,
+        "csstats": null
+    }
+}
+
+HTTP 200 OK — all fields null because API keys are not configured.
+No data was invented. BLOCKED: keys absent.

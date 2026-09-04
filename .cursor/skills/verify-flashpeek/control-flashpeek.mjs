@@ -8,11 +8,16 @@
  *   launch          Start Vite dev server (port 5174)
  *   wait-settle     Wait for the page to respond on port 5174
  *   session-start   Open a Playwright browser page
+ *   goto <path>     Navigate to a path (e.g. /player/s1mple)
+ *   wait-for <sel>  Wait for a CSS selector to appear
  *   screenshot <p>  Save a screenshot to <p>
  *   snapshot        Print an accessibility-tree snapshot
  *   click <sel>     Click a CSS selector
  *   text <sel> <t>  Type text into a CSS selector
  *   cleanup         Kill dev server and close browser
+ *
+ * Chain commands in one invocation with --then:
+ *   control-flashpeek.mjs session-start --then text '[data-testid="home-search"]' s1mple --then click 'button[type="submit"]' --then screenshot proof/profile.png
  */
 
 import { execSync } from "node:child_process";
@@ -180,6 +185,19 @@ async function sessionStart() {
   return page;
 }
 
+async function gotoPath(urlPath) {
+  if (!page) await sessionStart();
+  const url = urlPath.startsWith("/") ? `${APP_URL}${urlPath}` : urlPath;
+  await page.goto(url, { waitUntil: "networkidle" });
+  console.log(`Navigated to: ${url}`);
+}
+
+async function waitFor(selector) {
+  if (!page) await sessionStart();
+  await page.waitForSelector(selector, { timeout: 15000 });
+  console.log(`Found: ${selector}`);
+}
+
 async function screenshot(outPath) {
   if (!page) await sessionStart();
   const target = resolve(outPath);
@@ -190,8 +208,8 @@ async function screenshot(outPath) {
 
 async function snapshot() {
   if (!page) await sessionStart();
-  const tree = await page.accessibility.snapshot();
-  console.log(JSON.stringify(tree, null, 2));
+  const tree = await page.locator(":root").ariaSnapshot();
+  console.log(tree);
 }
 
 async function click(selector) {
@@ -229,54 +247,99 @@ async function cleanup() {
 
 // ── CLI dispatch ──────────────────────────────────────────────────
 
-const [cmd, ...args] = process.argv.slice(2);
-
-switch (cmd) {
-  case "doctor":
-    await doctor();
-    break;
-  case "launch":
-    await launch();
-    break;
-  case "wait-settle":
-    await waitSettle();
-    break;
-  case "session-start":
-    await sessionStart();
-    break;
-  case "screenshot":
-    if (!args[0]) {
-      console.error("Usage: control-flashpeek.mjs screenshot <path>");
+async function runCommand(cmd, args) {
+  switch (cmd) {
+    case "doctor":
+      await doctor();
+      break;
+    case "launch":
+      await launch();
+      break;
+    case "wait-settle":
+      await waitSettle();
+      break;
+    case "session-start":
+      await sessionStart();
+      break;
+    case "goto":
+      if (!args[0]) {
+        console.error("Usage: control-flashpeek.mjs goto <path>");
+        process.exit(1);
+      }
+      await gotoPath(args[0]);
+      break;
+    case "wait-for":
+      if (!args[0]) {
+        console.error("Usage: control-flashpeek.mjs wait-for <selector>");
+        process.exit(1);
+      }
+      await waitFor(args[0]);
+      break;
+    case "screenshot":
+      if (!args[0]) {
+        console.error("Usage: control-flashpeek.mjs screenshot <path>");
+        process.exit(1);
+      }
+      await screenshot(args[0]);
+      break;
+    case "snapshot":
+      await snapshot();
+      break;
+    case "click":
+      if (!args[0]) {
+        console.error("Usage: control-flashpeek.mjs click <selector>");
+        process.exit(1);
+      }
+      await click(args[0]);
+      break;
+    case "text":
+      if (!args[0] || !args[1]) {
+        console.error("Usage: control-flashpeek.mjs text <selector> <text>");
+        process.exit(1);
+      }
+      await text(args[0], args[1]);
+      break;
+    case "cleanup":
+      await cleanup();
+      break;
+    default: {
+      const _exhaustive = cmd;
+      console.error(`Unknown command: ${_exhaustive}`);
+      console.error(
+        "Commands: doctor, launch, wait-settle, session-start, goto, wait-for, screenshot, snapshot, click, text, cleanup",
+      );
       process.exit(1);
     }
-    await screenshot(args[0]);
-    break;
-  case "snapshot":
-    await snapshot();
-    break;
-  case "click":
-    if (!args[0]) {
-      console.error("Usage: control-flashpeek.mjs click <selector>");
-      process.exit(1);
-    }
-    await click(args[0]);
-    break;
-  case "text":
-    if (!args[0] || !args[1]) {
-      console.error("Usage: control-flashpeek.mjs text <selector> <text>");
-      process.exit(1);
-    }
-    await text(args[0], args[1]);
-    break;
-  case "cleanup":
-    await cleanup();
-    break;
-  default: {
-    const _exhaustive = cmd;
-    console.error(`Unknown command: ${_exhaustive}`);
-    console.error(
-      "Commands: doctor, launch, wait-settle, session-start, screenshot, snapshot, click, text, cleanup",
-    );
-    process.exit(1);
   }
+}
+
+const allArgs = process.argv.slice(2);
+const commands = [];
+let currentCmd = [];
+
+for (const arg of allArgs) {
+  if (arg === "--then") {
+    if (currentCmd.length > 0) commands.push(currentCmd);
+    currentCmd = [];
+  } else {
+    currentCmd.push(arg);
+  }
+}
+if (currentCmd.length > 0) commands.push(currentCmd);
+
+if (commands.length === 0) {
+  console.error("No command specified.");
+  console.error(
+    "Commands: doctor, launch, wait-settle, session-start, goto, wait-for, screenshot, snapshot, click, text, cleanup",
+  );
+  process.exit(1);
+}
+
+for (const [cmd, ...args] of commands) {
+  await runCommand(cmd, args);
+}
+
+const lastCmd = commands[commands.length - 1]?.[0];
+if (lastCmd !== "cleanup" && browser) {
+  await browser.close().catch(() => {});
 }
