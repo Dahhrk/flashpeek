@@ -1,0 +1,42 @@
+verify-flashpeek control harness run
+Branch: cursor/scaffold-flashpeek-51a3
+HEAD: 997a783257cd36b4306376f456c5d27cd28d0832
+Timestamp: 2026-09-04T04:42Z
+
+--- doctor ---
+Checking prerequisites…
+  node: OK
+  playwright: OK
+Doctor OK
+exit: 0
+
+--- launch ---
+Launching Vite dev server on port 5174…
+Dev server PID: 5507
+exit: 0
+
+--- wait-settle ---
+Page is up.
+exit: 0
+
+--- screenshot ---
+Session started.
+Screenshot saved: /workspace/proof/home.png
+exit: 0
+
+--- snapshot (ARIA) ---
+ariaSnapshot: "- main:\n  - heading \"Flashpeek\" [level=1]\n  - textbox \"FACEIT or Steam username\"\n  - button \"Peek\""
+testidElements:
+  home-root  tag=main  role=main   text="FlashpeekPeek"
+  home-brand tag=h1    role=h1     text="Flashpeek"
+  home-search tag=input role=input text=""
+exit: 0
+
+--- cleanup ---
+Dev server killed.
+exit: 0
+
+Artifacts:
+  proof/home.png       — screenshot (11245 bytes)
+  proof/home-aria.json — ARIA snapshot + testid structure
+  proof/gates.txt      — raw gate command output
