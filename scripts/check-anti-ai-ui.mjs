@@ -20,7 +20,7 @@ const RULES = [
     name: "Inter font",
     pattern: /\bInter\b/i,
     extensions: [".css", ".tsx", ".ts", ".jsx", ".js", ".html"],
-    message: 'Do not use Inter font — use system-ui stack until Walter sets direction.',
+    message: "Do not use Inter font — Lobby Plate specifies IBM Plex Sans / Archivo Narrow.",
   },
   {
     name: "Purple accent",

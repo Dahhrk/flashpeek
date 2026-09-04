@@ -27,11 +27,14 @@ export function Home() {
           data-testid="home-search"
           className="home__search"
           type="text"
-          placeholder="Search player…"
+          placeholder="FACEIT or Steam username"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search player by username"
+          aria-label="FACEIT or Steam username"
         />
+        <button type="submit" className="home__submit">
+          Peek
+        </button>
       </form>
     </main>
   );
