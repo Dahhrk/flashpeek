@@ -4,7 +4,7 @@
  * control-flashpeek — drive daemon for Flashpeek verification.
  *
  * Commands:
- *   doctor          Check prerequisites
+ *   doctor          Check prerequisites and emit JSON status
  *   launch          Start Vite dev server (port 5174)
  *   wait-settle     Wait for the page to respond on port 5174
  *   session-start   Open a Playwright browser page
@@ -15,18 +15,30 @@
  *   cleanup         Kill dev server and close browser
  */
 
-import { execSync, spawn } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { setTimeout as sleep } from "node:timers/promises";
+import { spawn } from "node:child_process";
 
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const APP_PORT = 5174;
-const APP_URL = `http://localhost:${APP_PORT}`;
+const DRIVE_PORT = 9336;
+const APP_URL = `http://127.0.0.1:${APP_PORT}`;
 const STATE_DIR = resolve("/tmp/flashpeek-control");
 
 let devServerProc = null;
 let browser = null;
 let page = null;
+
+function viteBin() {
+  return resolve(ROOT, "node_modules/vite/bin/vite.js");
+}
+
+function out(obj) {
+  process.stdout.write(JSON.stringify(obj, null, 2) + "\n");
+}
 
 async function getPlaywright() {
   const pw = await import("playwright");
@@ -36,44 +48,118 @@ async function getPlaywright() {
 // ── Commands ──────────────────────────────────────────────────────
 
 async function doctor() {
-  console.log("Checking prerequisites…");
+  const checks = {};
+  let allOk = true;
+
+  // node
   try {
     execSync("node --version", { stdio: "pipe" });
-    console.log("  node: OK");
+    checks.node = true;
   } catch {
-    console.error("  node: MISSING");
-    process.exit(1);
+    checks.node = false;
+    allOk = false;
   }
+
+  // package.json
+  checks.packageJson = existsSync(resolve(ROOT, "package.json"));
+  if (!checks.packageJson) allOk = false;
+
+  // index.html with Flashpeek title
+  const indexPath = resolve(ROOT, "index.html");
+  checks.indexHtml = existsSync(indexPath);
+  if (!checks.indexHtml) {
+    allOk = false;
+  }
+
+  let productTitle = null;
+  if (checks.indexHtml) {
+    const html = readFileSync(indexPath, "utf-8");
+    const m = html.match(/<title>([^<]+)<\/title>/);
+    productTitle = m ? m[1].trim() : null;
+  }
+  checks.productTitle = productTitle === "Flashpeek";
+  if (!checks.productTitle) allOk = false;
+
+  // Home component
+  checks.homeTsx = existsSync(resolve(ROOT, "src/features/home/Home.tsx"));
+  if (!checks.homeTsx) allOk = false;
+
+  // Feature map
+  checks.featureReadme = existsSync(
+    resolve(ROOT, ".cursor/skills/verify-flashpeek/features/README.md"),
+  );
+  if (!checks.featureReadme) allOk = false;
+
+  // Playwright + chromium
+  let playwrightOk = false;
   try {
     execSync("npx playwright --version", { stdio: "pipe" });
-    console.log("  playwright: OK");
+    playwrightOk = true;
   } catch {
-    console.error("  playwright: MISSING — run npx playwright install chromium");
-    process.exit(1);
+    // not installed
   }
-  console.log("Doctor OK");
+  checks.playwright = playwrightOk;
+  if (!checks.playwright) allOk = false;
+
+  // App reachable
+  let appReachable = false;
+  try {
+    const resp = await fetch(APP_URL, { signal: AbortSignal.timeout(2000) });
+    appReachable = resp.ok;
+  } catch {
+    // not reachable
+  }
+
+  // Identity check: page title contains "Flashpeek"
+  let flashpeekIdentity = false;
+  if (appReachable) {
+    try {
+      const resp = await fetch(APP_URL, { signal: AbortSignal.timeout(3000) });
+      const body = await resp.text();
+      flashpeekIdentity = body.includes("<title>Flashpeek</title>");
+    } catch {
+      // can't verify identity
+    }
+  }
+
+  const driveable = allOk && appReachable && flashpeekIdentity;
+
+  out({
+    product: "Flashpeek",
+    productTitle: productTitle ?? "unknown",
+    ok: allOk,
+    driveable,
+    appReachable,
+    ports: { app: APP_PORT, drive: DRIVE_PORT },
+    checks,
+  });
 }
 
 async function launch() {
   mkdirSync(STATE_DIR, { recursive: true });
-  console.log(`Launching Vite dev server on port ${APP_PORT}…`);
-  devServerProc = spawn("npx", ["vite", "--port", String(APP_PORT)], {
-    cwd: resolve(import.meta.dirname, "../../.."),
-    stdio: "ignore",
-    detached: true,
-  });
+  const bin = viteBin();
+  devServerProc = spawn(
+    process.execPath,
+    [bin, "--host", "127.0.0.1", "--port", String(APP_PORT), "--strictPort"],
+    {
+      cwd: ROOT,
+      stdio: "ignore",
+      detached: true,
+      windowsHide: true,
+    },
+  );
   writeFileSync(`${STATE_DIR}/dev.pid`, String(devServerProc.pid));
   devServerProc.unref();
-  console.log(`Dev server PID: ${devServerProc.pid}`);
+  out({ launched: true, pid: devServerProc.pid, port: APP_PORT });
 }
 
 async function waitSettle() {
   const maxAttempts = 30;
   for (let i = 0; i < maxAttempts; i++) {
     try {
-      const resp = await fetch(APP_URL);
+      const resp = await fetch(APP_URL, { signal: AbortSignal.timeout(2000) });
       if (resp.ok) {
-        console.log("Page is up.");
+        out({ settled: true, attempts: i + 1 });
         return;
       }
     } catch {
@@ -132,7 +218,6 @@ async function cleanup() {
   const pidFile = `${STATE_DIR}/dev.pid`;
   if (existsSync(pidFile)) {
     try {
-      const { readFileSync } = await import("node:fs");
       const pid = Number(readFileSync(pidFile, "utf-8").trim());
       process.kill(-pid, "SIGTERM");
     } catch {
