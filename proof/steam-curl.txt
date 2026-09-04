@@ -1,0 +1,46 @@
+Steam Web API — curl proof transcript
+======================================
+
+Date: 2026-09-04
+Server: npm run server (tsx server/main.ts) on port 3100
+API key: NOT SET (BLOCKED — no FLASHPEEK_STEAM_API_KEY or STEAM_WEB_API_KEY in env)
+
+--- Request 1: vanity URL lookup (no key) ---
+
+$ curl -s http://localhost:3100/api/steam/s1mple
+
+Response (HTTP 500):
+{"error":"FLASHPEEK_STEAM_API_KEY or STEAM_WEB_API_KEY must be set","code":"NO_API_KEY"}
+
+--- Request 2: Steam64 lookup (no key) ---
+
+$ curl -s http://localhost:3100/api/steam/76561198034202275
+
+Response (HTTP 500):
+{"error":"FLASHPEEK_STEAM_API_KEY or STEAM_WEB_API_KEY must be set","code":"NO_API_KEY"}
+
+--- Notes ---
+
+BLOCKED: No Steam Web API key is available in this environment.
+The server correctly refuses to fabricate data — it returns NO_API_KEY.
+To unblock, set FLASHPEEK_STEAM_API_KEY (or STEAM_WEB_API_KEY) via env / .env.local.
+
+When a valid key is provided, the response shape is:
+
+{
+  "steamId": "76561198034202275",
+  "personaName": "s1mple",
+  "profileUrl": "https://steamcommunity.com/id/s1mple/",
+  "avatarUrl": "https://avatars.steamstatic.com/..._full.jpg",
+  "accountCreatedUnix": 1306000000,
+  "accountAgeYears": 15,
+  "vacBanned": false,
+  "numberOfVacBans": 0,
+  "daysSinceLastBan": null,
+  "gameBans": 0,
+  "communityBanned": false,
+  "economyBan": "none",
+  "cs2HoursPlayed": 18500.3
+}
+
+(Fields are null when data is unavailable — never fabricated.)
