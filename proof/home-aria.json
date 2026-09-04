@@ -1,0 +1,23 @@
+{
+  "ariaSnapshot": "- main:\n  - heading \"Flashpeek\" [level=1]\n  - textbox \"FACEIT or Steam username\"\n  - button \"Peek\"",
+  "testidElements": [
+    {
+      "testid": "home-root",
+      "tag": "main",
+      "text": "FlashpeekPeek",
+      "role": "main"
+    },
+    {
+      "testid": "home-brand",
+      "tag": "h1",
+      "text": "Flashpeek",
+      "role": "h1"
+    },
+    {
+      "testid": "home-search",
+      "tag": "input",
+      "text": "",
+      "role": "input"
+    }
+  ]
+}

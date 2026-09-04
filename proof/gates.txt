@@ -1,0 +1,78 @@
+=== Stewie gate proof ===
+Branch: cursor/scaffold-flashpeek-51a3
+HEAD: 997a783257cd36b4306376f456c5d27cd28d0832
+Timestamp: 2026-09-04T04:41:51Z
+
+--- npm run lint ---
+
+> flashpeek@0.1.0 lint
+> oxlint src/
+
+Found 0 warnings and 0 errors.
+Finished in 2ms on 3 files with 101 rules using 4 threads.
+exit_code: 0
+
+--- npm run typecheck ---
+
+> flashpeek@0.1.0 typecheck
+> tsc --noEmit
+
+exit_code: 0
+
+--- npm run boundaries ---
+
+> flashpeek@0.1.0 boundaries
+> node scripts/check-boundaries.mjs
+
+Boundary check passed.
+exit_code: 0
+
+--- npm run anti-ai-ui ---
+
+> flashpeek@0.1.0 anti-ai-ui
+> node scripts/check-anti-ai-ui.mjs
+
+Anti-AI-UI check passed.
+exit_code: 0
+
+--- npm run build ---
+
+> flashpeek@0.1.0 build
+> tsc -b && vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 31 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.72 kB │ gzip:  0.39 kB
+dist/assets/index-C1hvWiEc.css    1.33 kB │ gzip:  0.61 kB
+dist/assets/index-COMqstm0.js   195.13 kB │ gzip: 61.07 kB
+✓ built in 547ms
+exit_code: 0
+
+--- npm run ci:drive ---
+
+> flashpeek@0.1.0 ci:drive
+> node scripts/ci-drive-smoke.mjs
+
+Starting dev server…
+Dev server is up. Launching browser…
+  ✓ home-root
+  ✓ home-brand
+  ✓ home-search
+Screenshot saved.
+
+Smoke test passed.
+exit_code: 0
+
+--- npm run visual-parity ---
+
+> flashpeek@0.1.0 visual-parity
+> node scripts/check-visual-parity.mjs
+
+MISSING: .gitkeep — no current screenshot found.
+
+1 visual parity failure(s).
+exit_code: 1
+

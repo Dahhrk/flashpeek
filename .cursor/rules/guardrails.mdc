@@ -1,0 +1,13 @@
+---
+description: Safety guardrails for Flashpeek development
+alwaysApply: true
+---
+
+# Guardrails
+
+1. **No secrets in source** — API keys, tokens, and credentials belong in environment variables or a secrets manager, never committed.
+2. **No VAC-risk code** — no memory reading, DLL injection, process hooks, or game-client manipulation of any kind.
+3. **No Control-Glass leakage** — this is a separate public product. Do not copy branding, product logic, or private assets from Control-Glass.
+4. **Feature boundaries** — run `npm run boundaries` before merging. Every feature must live under `src/features/<name>/` and only import from its own directory or from `src/shared/`.
+5. **Visual direction** — the look is pending a named design direction from Walter White. Until set, keep UI structurally correct with system fonts and neutral colors. Do not invent a visual identity.
+6. **Phase 2 fence** — Premier Live Game companion is out of scope. Do not build companion integration, overlay, or desktop agent. Reference PHASE2.md only.
