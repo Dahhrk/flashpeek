@@ -1,18 +1,32 @@
 # FACEIT API curl proof — Flashpeek Phase 1
-# BLOCKED: No FACEIT_API_KEY available in environment.
-# Proof below shows server boots, route responds, and rejects without a key.
-# Once a key is provisioned, re-run with:
+# STATUS: BLOCKED — no FACEIT_API_KEY in Cloud Agent environment.
+#
+# Investigation (2026-09-04):
+#   - env | grep -iE 'key|token|secret|auth|faceit|flash|steam' → (none)
+#   - No .env or .env.local files present
+#   - Cursor Cloud environment has no secrets configured
+#   - Egress is unrestricted (outbound HTTP works)
+#   - FACEIT API returns Cloudflare 403 without Bearer token
+#
+# To unblock: add FACEIT_API_KEY in Cursor Dashboard → Cloud Agents → Secrets
+# Then re-run:
 #   FACEIT_API_KEY=<key> npx tsx server/index.ts
 #   curl http://localhost:3001/api/faceit/76561198034202275
 
-# ── Test 1: No API key → 503 ──────────────────────────────────────────────
+# ── Test 1: Direct FACEIT API without auth → 403 (Cloudflare challenge) ───
+$ curl -s -w '\nHTTP %{http_code}\n' \
+    'https://open.faceit.com/data/v4/players?game=cs2&game_player_id=76561198034202275'
+HTTP 403
+(Cloudflare managed challenge page — requires Authorization: Bearer <key>)
+
+# ── Test 2: Server without API key → 503 ─────────────────────────────────
 $ curl -s -w '\nHTTP %{http_code}\n' http://localhost:3001/api/faceit/76561198034202275
 {"error":"FACEIT API key not configured. Set FACEIT_API_KEY or FLASHPEEK_FACEIT_API_KEY."}
 HTTP 503
 
-# ── Test 2: Invalid Steam ID → 503 (key check precedes validation) ───────
+# ── Test 3: Server input validation (key check precedes param check) ─────
 $ curl -s -w '\nHTTP %{http_code}\n' http://localhost:3001/api/faceit/badid123
 {"error":"FACEIT API key not configured. Set FACEIT_API_KEY or FLASHPEEK_FACEIT_API_KEY."}
 HTTP 503
 
-# ── STATUS: BLOCKED — needs FACEIT_API_KEY secret to produce live data ────
+# ── BLOCKED — needs FACEIT_API_KEY secret to produce live data ────────────
