@@ -1,0 +1,19 @@
+---
+description: Prevent generic AI-generated UI patterns in Flashpeek
+alwaysApply: true
+---
+
+# Anti-AI UI
+
+Run `npm run anti-ai-ui` to enforce. The check must stay green.
+
+## Banned patterns
+
+- **Inter font** — do not import or reference Inter. Use `system-ui` stack until Walter sets the type direction.
+- **Purple accent palette** — no `#7c3aed`, `#8b5cf6`, or similar purple hex values as primary/accent.
+- **Card grids** — no uniform card grid layouts (the "every SaaS landing page" pattern).
+- **Nightglass** — no dark + grain + neon-mint combination (dark background with grain texture and `#4ade80`-class mint accents).
+- **Gradient hero blobs** — no decorative gradient blur circles/blobs in hero sections.
+- **"Get Started" + "Learn More" button pairs** — use domain-specific copy.
+
+These patterns signal AI-generated UI and must be caught before merge.

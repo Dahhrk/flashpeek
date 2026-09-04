@@ -1,0 +1,26 @@
+node_modules/
+dist/
+*.local
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Visual test transients
+tests/visual/current/
+
+# Control daemon state
+/tmp/flashpeek-control/
+
+# Logs
+*.log
+npm-debug.log*

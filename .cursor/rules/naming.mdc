@@ -1,0 +1,14 @@
+---
+description: Naming conventions for the Flashpeek codebase
+alwaysApply: true
+---
+
+# Naming
+
+- **Product**: Flashpeek (one word, capital F, capital P in camelCase contexts: `flashPeek`).
+- **Domain intent**: flashpeek.gg
+- **Files**: kebab-case for scripts and configs, PascalCase for React components.
+- **CSS classes**: BEM-ish — `.block__element--modifier`.
+- **Test IDs**: kebab-case, prefixed by feature — e.g. `home-search`, `live-player-card`.
+- **Branches**: `cursor/<slug>` for agent work, `feat/`, `fix/` for human work.
+- **Environment variables**: `FLASHPEEK_` prefix for app-specific vars, `VITE_` prefix for client-exposed vars.

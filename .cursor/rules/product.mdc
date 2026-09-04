@@ -1,0 +1,26 @@
+---
+description: Product rules and boundaries for Flashpeek
+alwaysApply: true
+---
+
+# Product
+
+Flashpeek is a public CS2 player-stats and live-game lookup tool — **website first**.
+
+## MVP scope
+
+1. **Profile search** — search username → compiled profile (FACEIT + Premier current/previous seasons + recent games + form metrics).
+2. **Live Game (FACEIT)** — every player in the current FACEIT match with those stats; one-click out to .rip / csrep / Steam.
+3. **Live Game (Premier companion)** — PHASE 2 only. Do not build; see PHASE2.md.
+
+## Hard boundaries
+
+- No memory reading, process injection, or anything VAC-risky.
+- No fake data — if an API is not yet wired, show an empty/loading state.
+- No product secrets or API keys in source.
+- No Control-Glass branding, assets, or product logic.
+
+## Ports
+
+- App dev server: **5174** (avoids Control-Glass 5173).
+- Drive daemon: **9336** (avoids Control-Glass 9335).
