@@ -122,8 +122,8 @@ async function screenshot(outPath) {
 
 async function snapshot() {
   if (!page) await sessionStart();
-  const tree = await page.accessibility.snapshot();
-  console.log(JSON.stringify(tree, null, 2));
+  const tree = await page.locator(":root").ariaSnapshot();
+  console.log(tree);
 }
 
 async function click(selector) {
@@ -252,4 +252,9 @@ if (commands.length === 0) {
 
 for (const [cmd, ...args] of commands) {
   await runCommand(cmd, args);
+}
+
+const lastCmd = commands[commands.length - 1]?.[0];
+if (lastCmd !== "cleanup" && browser) {
+  await browser.close().catch(() => {});
 }
