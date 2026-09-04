@@ -1,0 +1,5 @@
+- document:
+  - main:
+    - heading "Flashpeek" [level=1]
+    - textbox "FACEIT or Steam username"
+    - button "Peek"

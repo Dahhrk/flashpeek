@@ -1,0 +1,10 @@
+- document:
+  - heading "s1mple" [level=1]
+  - heading "FACEIT" [level=2]
+  - paragraph: Unavailable
+  - heading "Premier" [level=2]
+  - paragraph: Unavailable
+  - heading "Recent games" [level=2]
+  - paragraph: Unavailable
+  - heading "Form" [level=2]
+  - paragraph: Unavailable
