@@ -1,0 +1,18 @@
+# FACEIT API curl proof — Flashpeek Phase 1
+# BLOCKED: No FACEIT_API_KEY available in environment.
+# Proof below shows server boots, route responds, and rejects without a key.
+# Once a key is provisioned, re-run with:
+#   FACEIT_API_KEY=<key> npx tsx server/index.ts
+#   curl http://localhost:3001/api/faceit/76561198034202275
+
+# ── Test 1: No API key → 503 ──────────────────────────────────────────────
+$ curl -s -w '\nHTTP %{http_code}\n' http://localhost:3001/api/faceit/76561198034202275
+{"error":"FACEIT API key not configured. Set FACEIT_API_KEY or FLASHPEEK_FACEIT_API_KEY."}
+HTTP 503
+
+# ── Test 2: Invalid Steam ID → 503 (key check precedes validation) ───────
+$ curl -s -w '\nHTTP %{http_code}\n' http://localhost:3001/api/faceit/badid123
+{"error":"FACEIT API key not configured. Set FACEIT_API_KEY or FLASHPEEK_FACEIT_API_KEY."}
+HTTP 503
+
+# ── STATUS: BLOCKED — needs FACEIT_API_KEY secret to produce live data ────
