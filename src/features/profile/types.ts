@@ -12,13 +12,24 @@ export interface PlayerIdentity {
   avatar: string | null;
 }
 
-export interface FaceitData {
+export interface FaceitSeasonData {
   elo: number | null;
   level: number | null;
 }
 
+export interface FaceitData {
+  elo: number | null;
+  level: number | null;
+  previous: FaceitSeasonData | null;
+}
+
+export interface PremierSeasonData {
+  rating: number | null;
+}
+
 export interface PremierData {
   rating: number | null;
+  previous: PremierSeasonData | null;
 }
 
 export interface RecentMatch {

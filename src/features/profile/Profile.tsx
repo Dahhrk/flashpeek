@@ -45,20 +45,43 @@ function FaceitPlate({ data }: { data: PlayerData }) {
     <section data-testid="profile-faceit" className="profile__plate">
       <h2 className="profile__section-label">FACEIT</h2>
       {data.faceit ? (
-        <div className="profile__stats-row">
-          {data.faceit.elo != null && (
-            <div className="profile__stat">
-              <span className="profile__stat-label">Elo</span>
-              <span className="profile__stat-value">{data.faceit.elo}</span>
-            </div>
-          )}
-          {data.faceit.level != null && (
-            <div className="profile__stat">
-              <span className="profile__stat-label">Level</span>
-              <span className="profile__stat-value">{data.faceit.level}</span>
-            </div>
-          )}
-        </div>
+        <>
+          <div className="profile__stats-row">
+            {data.faceit.elo != null && (
+              <div className="profile__stat">
+                <span className="profile__stat-label">Elo</span>
+                <span className="profile__stat-value">{data.faceit.elo}</span>
+              </div>
+            )}
+            {data.faceit.level != null && (
+              <div className="profile__stat">
+                <span className="profile__stat-label">Level</span>
+                <span className="profile__stat-value">{data.faceit.level}</span>
+              </div>
+            )}
+          </div>
+          <div className="profile__season-block">
+            <span className="profile__season-label">Previous season</span>
+            {data.faceit.previous ? (
+              <div className="profile__stats-row">
+                {data.faceit.previous.elo != null && (
+                  <div className="profile__stat">
+                    <span className="profile__stat-label">Elo</span>
+                    <span className="profile__stat-value">{data.faceit.previous.elo}</span>
+                  </div>
+                )}
+                {data.faceit.previous.level != null && (
+                  <div className="profile__stat">
+                    <span className="profile__stat-label">Level</span>
+                    <span className="profile__stat-value">{data.faceit.previous.level}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="profile__unavailable">Unavailable</p>
+            )}
+          </div>
+        </>
       ) : (
         <p className="profile__unavailable">Unavailable</p>
       )}
@@ -71,14 +94,31 @@ function PremierPlate({ data }: { data: PlayerData }) {
     <section data-testid="profile-premier" className="profile__plate">
       <h2 className="profile__section-label">Premier</h2>
       {data.premier ? (
-        <div className="profile__stats-row">
-          {data.premier.rating != null && (
-            <div className="profile__stat">
-              <span className="profile__stat-label">Rating</span>
-              <span className="profile__stat-value">{data.premier.rating}</span>
-            </div>
-          )}
-        </div>
+        <>
+          <div className="profile__stats-row">
+            {data.premier.rating != null && (
+              <div className="profile__stat">
+                <span className="profile__stat-label">Rating</span>
+                <span className="profile__stat-value">{data.premier.rating}</span>
+              </div>
+            )}
+          </div>
+          <div className="profile__season-block">
+            <span className="profile__season-label">Previous season</span>
+            {data.premier.previous ? (
+              <div className="profile__stats-row">
+                {data.premier.previous.rating != null && (
+                  <div className="profile__stat">
+                    <span className="profile__stat-label">Rating</span>
+                    <span className="profile__stat-value">{data.premier.previous.rating}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="profile__unavailable">Unavailable</p>
+            )}
+          </div>
+        </>
       ) : (
         <p className="profile__unavailable">Unavailable</p>
       )}
@@ -130,7 +170,7 @@ function FormStrip({ data }: { data: PlayerData }) {
       {data.form === null ? (
         <p className="profile__unavailable">Unavailable</p>
       ) : data.form.length === 0 ? (
-        <p className="profile__empty">No form data</p>
+        <p className="profile__unavailable">Unavailable</p>
       ) : (
         <div className="profile__form-marks" aria-label="Recent form">
           {data.form.map((mark, i) => (

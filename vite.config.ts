@@ -13,8 +13,15 @@ async function lookupPlayer(username: string) {
       faceitId: null as string | null,
       avatar: null as string | null,
     },
-    faceit: null as { elo: number | null; level: number | null } | null,
-    premier: null as { rating: number | null } | null,
+    faceit: null as {
+      elo: number | null;
+      level: number | null;
+      previous: { elo: number | null; level: number | null } | null;
+    } | null,
+    premier: null as {
+      rating: number | null;
+      previous: { rating: number | null } | null;
+    } | null,
     recent: null as
       | Array<{
           map: string;
@@ -53,6 +60,7 @@ async function lookupPlayer(username: string) {
         result.faceit = {
           elo: (cs2?.["faceit_elo"] as number) ?? null,
           level: (cs2?.["skill_level"] as number) ?? null,
+          previous: null,
         };
 
         const playerId = result.identity.faceitId;

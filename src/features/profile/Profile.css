@@ -95,6 +95,23 @@
   text-transform: none;
 }
 
+.profile__season-block {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #353b45;
+}
+
+.profile__season-label {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #8b919a;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  display: block;
+  text-transform: none;
+}
+
 .profile__unavailable {
   font-family: "IBM Plex Sans", system-ui, sans-serif;
   font-size: 0.875rem;
