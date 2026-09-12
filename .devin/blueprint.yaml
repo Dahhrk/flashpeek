@@ -1,0 +1,24 @@
+# Devin cloud environment for Flashpeek (flashpeek.gg).
+# Git-backed blueprint - no secrets; FACEIT/Steam keys stay in env.
+
+maintenance: |
+  git config user.name "Dark"
+  git config user.email "32241100+Dahhrk@users.noreply.github.com"
+  npm ci
+
+knowledge:
+  - name: test
+    contents: |
+      Gates - run before push:
+        npm run lint                 # oxlint src/
+        npm run typecheck            # tsc --noEmit
+      UI product - the eyes are verify-flashpeek / control-flashpeek
+      (.cursor/skills/). Design direction: DESIGN.md (Lobby Plate).
+      Visual work needs the control CLI + screenshots, not a typecheck.
+
+  - name: rules
+    contents: |
+      Draft PRs only - the author never merges. One verifiable unit per PR
+      with Done means + Keep. Copy contract is Walter-locked in the registry
+      entry - do not invent new strings. Commits author as the repo owner
+      (seeded above) - no AI attribution trailers.
