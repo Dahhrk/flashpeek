@@ -28,6 +28,7 @@ npx playwright install chromium
 
 ## Rules
 
+- Non-trivial engineering work starts in `/poteto-mode` — observe, name the data shape, smallest correct diff, verify against the real artifact, hand off with Done means + Keep.
 - Read `.cursor/rules/` before making changes — they are always-apply.
 - No secrets in source. No VAC-risky code. No Control-Glass branding.
 - Visual direction is pending — do not invent a look. See DESIGN.md.
