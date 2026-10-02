@@ -10,7 +10,7 @@
  *   session-start   Open a Playwright browser page
  *   goto <path>     Navigate to a path (e.g. /player/s1mple)
  *   wait-for <sel>  Wait for a CSS selector to appear
- *   screenshot <p>  Save a screenshot to <p>
+ *   screenshot [p]  Save a screenshot to [p] (default: tests/visual/current/home.png)
  *   snapshot        Print an accessibility-tree snapshot
  *   click <sel>     Click a CSS selector
  *   text <sel> <t>  Type text into a CSS selector
@@ -275,13 +275,11 @@ async function runCommand(cmd, args) {
       }
       await waitFor(args[0]);
       break;
-    case "screenshot":
-      if (!args[0]) {
-        console.error("Usage: control-flashpeek.mjs screenshot <path>");
-        process.exit(1);
-      }
-      await screenshot(args[0]);
+    case "screenshot": {
+      const screenshotPath = args[0] ?? resolve(ROOT, "tests/visual/current/home.png");
+      await screenshot(screenshotPath);
       break;
+    }
     case "snapshot":
       await snapshot();
       break;
